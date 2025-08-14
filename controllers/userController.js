@@ -24,30 +24,45 @@ exports.getDashboardPage = async (req, res) => {
 };
 
 exports.registerUser = async (req, res) => {
-    console.log("Tentative d'inscription en cours...");
-
-    const { username, email, password, role } = req.body;
+    console.log("📩 Tentative d'inscription...");
 
     try {
-        let user = await User.findOne({ email });
-        console.log("Recherche d'utilisateur existant terminée. Utilisateur trouvé:", !!user);
+        // 🔍 Vérifier ce qui est reçu
+        console.log("Données reçues :", req.body);
 
-        if (user) {
-            console.log("Erreur : l'utilisateur existe déjà.");
+        const { username, email, password, role } = req.body;
+
+        // Vérifier si tous les champs sont présents
+        if (!username || !email || !password || !role) {
+            console.log("❌ Champs manquants");
+            return res.status(400).send("Tous les champs sont obligatoires");
+        }
+
+        // Vérifier si l'email ou le username existe déjà
+        let existingUser = await User.findOne({
+            $or: [{ email }, { username }]
+        });
+        console.log("Utilisateur existant :", !!existingUser);
+
+        if (existingUser) {
+            console.log("⚠ L'email ou le nom d'utilisateur existe déjà");
             return res.redirect("/register?error=user_exists");
         }
 
+        // Hasher le mot de passe
         const hashedPassword = await bcrypt.hash(password, 10);
-        console.log("Mot de passe haché avec succès.");
+        console.log("🔑 Mot de passe haché");
 
+        // Créer un nouvel utilisateur
         const newUser = await User.create({
             username,
             email,
             password: hashedPassword,
             role
         });
-        console.log("Nouvel utilisateur créé dans la base de données.");
+        console.log("✅ Nouvel utilisateur créé :", newUser._id);
 
+        // Enregistrer l'utilisateur en session
         req.session.user = {
             id: newUser._id,
             username: newUser.username,
@@ -55,14 +70,21 @@ exports.registerUser = async (req, res) => {
             role: newUser.role
         };
 
-        console.log("Utilisateur connecté. Redirection vers la page d'accueil.");
-        return res.redirect("/user/home");
+        // 🔹 Redirection selon le rôle
+        if (newUser.role === "admin") {
+            console.log("👤 Admin connecté, redirection vers /admin/home");
+            return res.redirect("/admin/home");
+        } else {
+            console.log("👤 Utilisateur connecté, redirection vers /user/home");
+            return res.redirect("/user/home");
+        }
 
     } catch (err) {
-        console.error("Erreur d'inscription:", err.message);
-        res.status(500).send("Erreur du serveur.");
+        console.error("💥 Erreur d'inscription :", err);
+        return res.status(500).send("Erreur du serveur : " + err.message);
     }
 };
+
 
 exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
