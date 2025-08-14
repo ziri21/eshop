@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+  <!-- Barre de navigation -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Dashboard Admin</h1>
+    <nav class="space-x-4">
+      <a href="/admin/users" class="text-blue-500">Gestion Utilisateurs</a>
+      <a href="/admin/products" class="text-green-500">Gestion Produits</a>
+      <a href="/logout" class="text-red-500">Déconnexion</a>
+    </nav>
+  </header>
+
+  <!-- Contenu -->
+  <main class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Gestion Produits -->
+    <div class="bg-white p-6 rounded shadow">
+      <h2 class="text-xl font-semibold mb-4">Produits</h2>
+      <p class="text-gray-600 mb-4">Ajoutez, modifiez ou supprimez des produits.</p>
+      <a href="/admin/products" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Gérer les Produits</a>
+    </div>
+
+    <!-- Gestion Utilisateurs -->
+    <div class="bg-white p-6 rounded shadow">
+      <h2 class="text-xl font-semibold mb-4">Utilisateurs</h2>
+      <p class="text-gray-600 mb-4">Consultez et gérez les comptes utilisateurs.</p>
+      <a href="/admin/users" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Gérer les Utilisateurs</a>
+    </div>
+  </main>
+</body>
+</html>
